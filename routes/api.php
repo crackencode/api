@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Ruta para consumir la API books
-Route::Resource('/books', 'Book\BooksController');
+// Utilizamos un middleware para habilitar CORS
+Route::group(['middleware' => 'cors'], function()
+{
+    Route::Resource('/books', 'Book\BooksController', [
+        'except' => ['edit']
+    ]);
+});

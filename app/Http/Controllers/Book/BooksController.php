@@ -9,16 +9,6 @@ use App\Http\Controllers\Controller;
 class BooksController extends Controller
 {
     /**
-     * BooksController constructor.
-     */
-    public function __construct()
-    {
-        //Cabecera necesaria para permitir consumir la API desde Angular
-
-        header('Access-Control-Allow-Origin: *');
-    }
-
-    /**
      * Muestra todos los libros
      *
      * @return string
@@ -59,21 +49,9 @@ class BooksController extends Controller
     }
 
     /**
-     * Muestra un libro concreto
-     *
+     * @param Request $request
      * @param $id
-     * @return false|string
-     */
-    function edit($id)
-    {
-        $book = Book::find($id);
-
-        return json_encode($book);
-    }
-
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @param $id
+     * @return string
      */
     public function update(Request $request, $id)
     {
