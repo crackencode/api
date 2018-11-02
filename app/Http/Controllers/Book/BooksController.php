@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Validator;
 
 class BooksController extends Controller
 {
+    private $book;
+
+    public function __construct()
+    {
+        $this->book = Book::all();
+    }
+
     /**
      * Muestra todos los libros
      *
@@ -17,7 +24,7 @@ class BooksController extends Controller
      */
     public function index()
     {
-        return Book::all()->toJson();
+        return $this->book->toJson();
     }
 
     /**
@@ -45,14 +52,16 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        $book = Book::all();
-
-        $book = $book->find($id);
+        $book = $this->book->find($id);
 
         return json_encode($book);
     }
 
-
+    /**
+     * @param Request $request
+     * @param $id
+     * @return false|\Illuminate\Http\JsonResponse|string
+     */
     public function update(Request $request, $id)
     {
         // Validamos el formulario en el lado servidor
@@ -63,8 +72,7 @@ class BooksController extends Controller
         }
 
         // Buscamos el libro que se quiere actualizar
-        $book = Book::all();
-        $book = $book->find($id);
+        $book = $this->book->find($id);
 
         // Update de los datos
         $book->autor = $request->input('autor');
@@ -74,8 +82,7 @@ class BooksController extends Controller
 
         // Guardamos los nuevos datos y los devolvemos actualizados
         if ($book->save()) {
-            $bookUpdate = Book::all();
-            $bookUpdate = $bookUpdate->find($id);
+            $bookUpdate = $this->book->find($id);
 
             return json_encode($bookUpdate);
         }
@@ -86,12 +93,20 @@ class BooksController extends Controller
 
     /**
      * @param $id
+     * @return false|string
+     * @throws \Exception
      */
     public function destroy($id)
     {
-        //
+        $book = $this->book->find($id);
+        $delete = $book->delete();
+
+        return json_encode($delete);
     }
 
+    /**
+     * @return array
+     */
     private function getRules(): array
     {
         $tomorrow = new \DateTime('tomorrow');
