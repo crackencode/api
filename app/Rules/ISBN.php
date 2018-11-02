@@ -25,6 +25,17 @@ class ISBN implements Rule
      */
     public function passes($attribute, $value)
     {
+        // Como el regexp no valida el ISBN con "-" los eliminamos
+        $isbn = str_replace("-", "", $value);
+
+        // Expresion regular para ISBN
+        // Se puede cambiar a expresiones mas concretas
+        $regex = '/^(97(8|9))?\d{9}(\d|X)$/';
+
+        if (preg_match($regex, $isbn)) {
+            return true;
+        }
+
         return false;
     }
 

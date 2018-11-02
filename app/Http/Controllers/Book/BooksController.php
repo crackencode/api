@@ -55,18 +55,24 @@ class BooksController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validamos el formulario en el lado servidor
         $validator = Validator::make($request->all(), $this->getRules());
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()]);
         }
 
+        // Buscamos el libro que se quiere actualizar
         $book = Book::all();
-
         $book = $book->find($id);
 
+        // Update de los datos
         $book->autor = $request->input('autor');
+        $book->title = $request->input('title');
+        $book->ISBN = str_replace("-", "", $request->input('ISBN'));
+        $book->publication_date = $request->input('publication_date');
 
+        // Guardamos los nuevos datos y los devolvemos actualizados
         if ($book->save()) {
             $bookUpdate = Book::all();
             $bookUpdate = $bookUpdate->find($id);
@@ -74,6 +80,7 @@ class BooksController extends Controller
             return json_encode($bookUpdate);
         }
 
+        // Si no se han actualizado los datos, devolvemos un error
         return json_encode(['errors' => 'Error al actualizar el registro']);
     }
 
@@ -87,6 +94,9 @@ class BooksController extends Controller
 
     private function getRules(): array
     {
+        $tomorrow = new \DateTime('tomorrow');
+
+        // Reglas de validación para libros
         return [
             'autor' => [
                 'required',
@@ -101,6 +111,12 @@ class BooksController extends Controller
             'ISBN' => [
                 'required',
                 new ISBN()
+            ],
+            'publication_date' => [
+                'required',
+                'date',
+                'date_format:Y-m-d',
+                'before:' . $tomorrow->format('Y-m-d')
             ],
         ];
     }
