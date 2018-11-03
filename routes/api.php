@@ -16,6 +16,6 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => 'cors'], function()
 {
     Route::Resource('/books', 'Book\BooksController', [
-        'except' => ['edit']
+        'except' => ['edit', 'create']
     ]);
 });

@@ -12,6 +12,9 @@ class BooksController extends Controller
 {
     private $book;
 
+    /**
+     * BooksController constructor.
+     */
     public function __construct()
     {
         $this->book = Book::all();
@@ -28,19 +31,33 @@ class BooksController extends Controller
     }
 
     /**
+     * Guarda un libro nuevo
      *
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     * @return false|\Illuminate\Http\JsonResponse|string
      */
     public function store(Request $request)
     {
-        //
+        // Validamos el formulario en el lado servidor
+        $validator = Validator::make($request->all(), $this->getRules());
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()]);
+        }
+
+        $book = new Book;
+
+        $book->autor = $request->input('autor');
+        $book->title = $request->input('title');
+        $book->ISBN = str_replace("-", "", $request->input('ISBN'));
+        $book->publication_date = $request->input('publication_date');
+
+        if ($book->save()) {
+            return json_encode(true);
+        }
+
+        // Si no se han actualizado los datos, devolvemos un error
+        return json_encode(['errors' => 'Error al actualizar el registro']);
     }
 
     /**
@@ -58,6 +75,8 @@ class BooksController extends Controller
     }
 
     /**
+     * Actualiza los datos de un libro
+     *
      * @param Request $request
      * @param $id
      * @return false|\Illuminate\Http\JsonResponse|string
@@ -92,6 +111,8 @@ class BooksController extends Controller
     }
 
     /**
+     * Elimina un libro
+     *
      * @param $id
      * @return false|string
      * @throws \Exception
@@ -105,6 +126,8 @@ class BooksController extends Controller
     }
 
     /**
+     * Array de todas las reglas que tiene que pasar la validacion
+     *
      * @return array
      */
     private function getRules(): array
